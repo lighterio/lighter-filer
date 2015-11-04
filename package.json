@@ -1,33 +1,61 @@
 {
-  "name": "lighter-dive",
+  "name": "lighter-files",
   "version": "0.0.1",
-  "description": "A lightweight directory deep-dive utility.",
-  "dependencies": {},
-  "devDependencies": {
-    "exam": ">=0.3.5"
+  "description": "A lightweight directory and file utility.",
+  "dependencies": {
+    "lighter-flagger": "0.0.1",
+    "lighter-tree": "^1.0.0"
   },
+  "devDependencies": {
+    "exam": ">=1.2.0 <2"
+  },
+  "bundledDependencies": [
+    "lighter-tree",
+    "lighter-flagger"
+  ],
   "keywords": [
+    "file",
+    "directory",
+    "fs",
+    "directories",
+    "path",
+    "paths",
+    "fs",
+    "filesystem",
+    "read",
+    "recursive",
+    "readfile",
+    "readdir",
+    "async",
+    "asynchronous",
+    "tree",
+    "trie",
+    "utility",
     "lighter",
     "fast",
     "lightweight",
-    "minimal"
+    "minimal",
+    "benchmark",
+    "speed",
+    "ops"
   ],
-  "main": "lighter-dive.js",
+  "main": "lighter-files.js",
   "engines": {
-    "node": ">=0.2.6"
+    "node": ">=0.8.28"
   },
   "scripts": {
     "test": "./node_modules/exam/exam.js",
     "cover": "./node_modules/exam/exam-cover.js",
     "report": "open coverage/lcov-report/index.html",
-    "coveralls": "./node_modules/exam/exam-coveralls.js"
+    "coveralls": "./node_modules/exam/exam-coveralls.js",
+    "bench": "./node_modules/exam/exam.js test/bench"
   },
-  "repository": "https://github.com/lighterio/lighter-dive.git",
-  "bugs": "https://github.com/lighterio/lighter-dive/issues",
-  "homepage": "https://github.com/lighterio/lighter-dive",
+  "repository": "https://github.com/lighterio/lighter-files.git",
+  "bugs": "https://github.com/lighterio/lighter-files/issues",
+  "homepage": "https://github.com/lighterio/lighter-files",
   "author": "Sam Eubank <sameubank@gmail.com>",
   "contributors": [
     "Sam Eubank <sameubank@gmail.com>"
   ],
-  "license": "MIT"
+  "license": "ISC"
 }
