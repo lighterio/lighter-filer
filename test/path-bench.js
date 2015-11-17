@@ -1,8 +1,9 @@
 'use strict'
-/* global bench it */
+/* global it */
 
 var Files = require('../lighter-files')
 var lib = require('path')
+var bench = global.bench || function () {}
 
 bench('Relative paths', function () {
   var files = new Files('/some/where')

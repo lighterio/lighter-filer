@@ -10,8 +10,7 @@ describe('Files.prototype.load', function () {
     var files = new Files(dir)
     files
       .on('loaded', function () {
-        is.array(files.list)
-        is.truthy(files.list.length)
+        is.same(files.rels(), ['branch/leaf.js', 'leaf.js'])
         done()
       })
       .load()
@@ -20,8 +19,8 @@ describe('Files.prototype.load', function () {
     var files = new Files(dir)
     files
       .on('loaded', function () {
-        is.array(files.list)
-        is.truthy(files.list.length)
+        is.same(files.paths(), [dir + '/branch/leaf.js'])
+        is('' + files.list[0].content, "console.log('leaf:2')\n")
         done()
       })
       .load(dir + '/branch/leaf.js')
@@ -30,8 +29,7 @@ describe('Files.prototype.load', function () {
     var files = new Files(dir)
     files
       .on('loaded', function () {
-        is.array(files.list)
-        is.truthy(files.list.length)
+        is.same(files.rels(), ['branch/leaf.js', 'leaf.js'])
         done()
       })
       .load('branch/leaf.js')
