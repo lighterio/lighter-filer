@@ -1,7 +1,7 @@
 'use strict'
 /* global it */
 
-var Files = require('../lighter-files')
+var Files = require('../lighter-filer')
 var lib = require('path')
 var bench = global.bench || function () {}
 

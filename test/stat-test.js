@@ -1,7 +1,7 @@
 'use strict'
 /* global describe it */
 
-var Files = require('../lighter-files')
+var Files = require('../lighter-filer')
 var is = global.is || require('exam/lib/is')
 
 describe('Files.prototype.stat', function () {

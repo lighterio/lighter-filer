@@ -1,5 +1,5 @@
 {
-  "name": "lighter-files",
+  "name": "lighter-filer",
   "version": "0.0.1",
   "description": "A lightweight directory and file utility.",
   "dependencies": {
@@ -39,7 +39,7 @@
     "speed",
     "ops"
   ],
-  "main": "lighter-files.js",
+  "main": "lighter-filer.js",
   "engines": {
     "node": ">=0.8.28"
   },
@@ -50,9 +50,9 @@
     "coveralls": "./node_modules/exam/exam-coveralls.js",
     "bench": "./node_modules/exam/exam.js test/bench"
   },
-  "repository": "https://github.com/lighterio/lighter-files.git",
-  "bugs": "https://github.com/lighterio/lighter-files/issues",
-  "homepage": "https://github.com/lighterio/lighter-files",
+  "repository": "https://github.com/lighterio/lighter-filer.git",
+  "bugs": "https://github.com/lighterio/lighter-filer/issues",
+  "homepage": "https://github.com/lighterio/lighter-filer",
   "author": "Sam Eubank <sameubank@gmail.com>",
   "contributors": [
     "Sam Eubank <sameubank@gmail.com>"

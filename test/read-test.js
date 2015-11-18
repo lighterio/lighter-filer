@@ -2,7 +2,7 @@
 /* global describe it beforeEach afterEach */
 
 var fs = require('fs')
-var Files = require('../lighter-files')
+var Files = require('../lighter-filer')
 var is = global.is || require('exam/lib/is')
 var mock = global.mock || require('exam/lib/mock')
 var unmock = mock.unmock
