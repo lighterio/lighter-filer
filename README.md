@@ -24,7 +24,7 @@ For now, please see the [source](https://github.com/lighterio/lighter-filer/blob
 
 ## Examples
 
-For now, please see the [tests](https://github.com/lighterio/lighter-filer/blob/master/test/type.js).
+For now, please see the [tests](https://github.com/lighterio/lighter-filer/blob/master/test).
 
 
 ## More on lighter-filer...

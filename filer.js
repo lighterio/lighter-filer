@@ -1,8 +1,12 @@
 'use strict'
+var fs = require('fs')
+var Flagger = require('lighter-flagger')
+var File = require('./file')
+
 /**
- * Dive asynchronously into a path, and call back with an array of paths
- * that exist under it. Indicate directories with trailing slashes, and omit
- * symbolic links.
+ * A Filer can asynchronously dive down a directory, emitting events for files
+ * and directories that exist under it. Symbolic links are followed, with loop
+ * protection.
  *
  * Events:
  * - "file" is emitted when a new file is found.
@@ -11,23 +15,35 @@
  * - "found" when a locations are completely found.
  * - "loaded" when locations are completely loaded.
  */
+var Filer = module.exports = Flagger.extend({
 
-var fs = require('fs')
-var Flagger = require('lighter-flagger')
-module.exports = Flagger.extend({
+  // Use the file system.
+  fs: fs,
 
-  init: function Files (root) {
-    // Set up Emitter events and Flagger flags.
-    Flagger.call(this)
+  // Use File objects.
+  File: File,
+
+  /**
+   * Create a new filer with a root path (or rooted at the current working
+   * directory).
+   *
+   * @param  {String} root  An optional path to this filer's root.
+   */
+  init: function Filer (root) {
+    // Flagger properties.
+    this._events = {}
+    this._flags = {}
+    this._waitCount = 0
+    this._waitParents = []
 
     // Default to the current working directory.
-    this.root = root || process.cwd()
+    this.root = root || Filer.root
 
     // Mapping of paths to objects or symlink destinations.
     this.map = {}
 
     // Array of files.
-    this.list = []
+    this.files = []
 
     // Array of directories.
     this.dirs = []
@@ -43,12 +59,30 @@ module.exports = Flagger.extend({
   },
 
   /**
+   * Return a user-friendly path, using "~/" or "./" where possible.
+   *
+   * @param  {String} path  A relative path.
+   * @return {String}       The shortened path.
+   */
+  display: function display (path) {
+    var Filer = this.constructor
+    var rel = Filer.relative(path)
+    if (rel[0] !== '.') {
+      rel = './' + rel
+    }
+    if (path.indexOf(Filer.home) === 0) {
+      path = '~/' + path.substr(Filer.home.length)
+    }
+    return rel.length < path.length ? rel : path
+  },
+
+  /**
    * Convert a relative path to an absolute path.
    *
    * @param  {String} path  A relative path.
    * @return {String}       The absolute path.
    */
-  absolute: function (path) {
+  absolute: function absolute (path) {
     var dir = this.root
     if (path[0] !== '/') {
       while (path.substr(0, 3) === '../') {
@@ -69,7 +103,7 @@ module.exports = Flagger.extend({
    * @param  {String} path  A absolute path.
    * @return {String}       The relative path.
    */
-  relative: function (path) {
+  relative: function relative (path) {
     var dir = this.root
     var length = dir.length
     if (path.substr(0, length) === dir) {
@@ -100,10 +134,11 @@ module.exports = Flagger.extend({
    *
    * @param  {String}   path  An optional relative or absolute path.
    */
-  find: function (path) {
+  find: function find (path) {
     var self = this
+    var fs = this.fs
     var wait = 0
-    path = self.absolute(path || self.root)
+    path = this.absolute(path || this.root)
     getStat(path)
     function getStat (path) {
       wait++
@@ -120,10 +155,13 @@ module.exports = Flagger.extend({
               self.dirs.push(rel)
               self.emit('dir', path)
             } else {
-              var file = self.storeStats ? stat : {}
-              file.rel = rel
+              var options = self.storeStats ? stat : {}
+              options.rel = rel
+              options.stat = self.storeStats ? stat : null
+              options.filer = self
+              var file = new self.File(options)
               self.map[rel] = file
-              self.list.push(file)
+              self.files.push(file)
               self.emit('file', path)
             }
           }
@@ -162,12 +200,12 @@ module.exports = Flagger.extend({
     }
     function done () {
       if (!--wait) {
-        self.list.sort(function (a, b) {
+        self.files.sort(function (a, b) {
           return a.rel < b.rel ? -1 : 1
         })
-        self.emit('found', self.list)
+        self.emit('found', self.files)
         if (self.storeStats) {
-          self.emit('stats', self.list)
+          self.emit('stats', self.files)
         }
       }
     }
@@ -179,7 +217,7 @@ module.exports = Flagger.extend({
    *
    * @param  {String} path  An optional path.
    */
-  stat: function (path) {
+  stat: function stat (path) {
     this.storeStats = true
     return this.find(path)
   },
@@ -189,7 +227,7 @@ module.exports = Flagger.extend({
    *
    * @param  {String} path  An optional path.
    */
-  load: function (path) {
+  load: function load (path) {
     // Bind the content reader to the file event, but only bind it once.
     if (!this.readContents) {
       this.readContents = true
@@ -205,9 +243,10 @@ module.exports = Flagger.extend({
    *
    * @param  {String} path  A file path.
    */
-  read: function (path) {
+  read: function read (path) {
     var self = this
-    this.loadCounter++
+    var fs = self.fs
+    self.loadCounter++
     fs.readFile(path, function (error, content) {
       if (error) {
         self.emit('error', error)
@@ -216,12 +255,12 @@ module.exports = Flagger.extend({
         var file = self.map[rel]
         if (!file) {
           file = self.map[rel] = {rel: rel}
-          self.list.push(file)
+          self.files.push(file)
         }
         file.content = content
       }
       if (!--self.loadCounter) {
-        self.emit('loaded', self.list)
+        self.emit('loaded', self.files)
       }
     })
     return this
@@ -230,8 +269,8 @@ module.exports = Flagger.extend({
   /**
    * Get absolute paths of found files.
    */
-  paths: function () {
-    var list = this.list
+  paths: function paths () {
+    var list = this.files
     var length = list.length
     var paths = new Array(length)
     for (var i = 0; i < length; i++) {
@@ -243,8 +282,8 @@ module.exports = Flagger.extend({
   /**
    * Get relative paths of found files.
    */
-  rels: function () {
-    var list = this.list
+  rels: function rels () {
+    var list = this.files
     var length = list.length
     var paths = new Array(length)
     for (var i = 0; i < length; i++) {
@@ -253,3 +292,14 @@ module.exports = Flagger.extend({
     return paths
   }
 })
+
+// Remember the user's home directory.
+Filer.home = (process.env.HOME).replace(/\/?$/, '/')
+Filer.init(Filer, [process.cwd()])
+
+// Remember the current directory, and track changes.
+var chdir = process.chdir
+process.chdir = function () {
+  chdir.apply(process, arguments)
+  Filer.root = process.cwd()
+}

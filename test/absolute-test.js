@@ -1,12 +1,12 @@
 'use strict'
 /* global describe it */
 
-var Files = require('../lighter-filer')
+var Filer = require('../filer')
 var is = global.is || require('exam/lib/is')
 
-describe('Files', function () {
+describe('Filer', function () {
   describe('.absolute', function () {
-    var files = new Files('/some/where')
+    var files = new Filer('/some/where')
 
     it('goes up', function () {
       var path = files.absolute('../')

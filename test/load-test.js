@@ -1,13 +1,13 @@
 'use strict'
 /* global describe it */
 
-var Files = require('../lighter-filer')
+var Filer = require('../filer')
 var is = global.is || require('exam/lib/is')
 
-describe('Files.prototype.load', function () {
+describe('Filer.prototype.load', function () {
   var dir = __dirname + '/tree'
   it('loads files under the root', function (done) {
-    var files = new Files(dir)
+    var files = new Filer(dir)
     files
       .on('loaded', function () {
         is.same(files.rels(), ['branch/leaf.js', 'leaf.js'])
@@ -16,17 +16,17 @@ describe('Files.prototype.load', function () {
       .load()
   })
   it('loads a specified file', function (done) {
-    var files = new Files(dir)
+    var files = new Filer(dir)
     files
       .on('loaded', function () {
         is.same(files.paths(), [dir + '/branch/leaf.js'])
-        is('' + files.list[0].content, "console.log('leaf:2')\n")
+        is('' + files.files[0].content, "console.log('leaf:2')\n")
         done()
       })
       .load(dir + '/branch/leaf.js')
   })
   it('can be called twice', function (done) {
-    var files = new Files(dir)
+    var files = new Filer(dir)
     files
       .on('loaded', function () {
         is.same(files.rels(), ['branch/leaf.js', 'leaf.js'])

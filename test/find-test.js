@@ -2,16 +2,16 @@
 /* global describe it beforeEach afterEach */
 
 var fs = require('fs')
-var Files = require('../lighter-filer')
+var Filer = require('../filer')
 var is = global.is || require('exam/lib/is')
 var mock = global.mock || require('exam/lib/mock')
 var unmock = mock.unmock
 
-describe('Files.prototype.find', function () {
+describe('Filer.prototype.find', function () {
   var dir = __dirname + '/tree'
 
   it('finds files', function (done) {
-    var files = new Files(dir)
+    var files = new Filer(dir)
     files.find()
     files.on('found', function () {
       is.same(files.rels(), ['branch/leaf.js', 'leaf.js'])
@@ -26,7 +26,7 @@ describe('Files.prototype.find', function () {
 
     it('from fs.lstat', function (done) {
       mock(fs, {lstat: errorFn})
-      var files = new Files(dir)
+      var files = new Filer(dir)
       var count = mock.count()
       files
         .on('error', count)
@@ -42,7 +42,7 @@ describe('Files.prototype.find', function () {
     it('from fs.readlink', function (done) {
       mock(fs, {readlink: errorFn})
       fs.symlink(dir, dir + '/branch/loop', 'dir', function () {
-        var files = new Files(dir)
+        var files = new Filer(dir)
         var count = mock.count()
         files
           .on('error', count)
@@ -60,7 +60,7 @@ describe('Files.prototype.find', function () {
 
     it('from fs.readdir', function (done) {
       mock(fs, {readdir: errorFn})
-      var files = new Files(dir)
+      var files = new Filer(dir)
       var count = mock.count()
       files
         .on('error', count)
@@ -86,21 +86,21 @@ describe('Files.prototype.find', function () {
     })
 
     it('with downward symlinks', function (done) {
-      var files = new Files(dir)
+      var files = new Filer(dir)
       files.find()
       files.on('found', function () {
-        is.array(files.list)
-        is.truthy(files.list.length)
+        is.array(files.files)
+        is.truthy(files.files.length)
         done()
       })
     })
 
     it('with upward symlinks', function (done) {
-      var files = new Files(dir + '/branch')
+      var files = new Filer(dir + '/branch')
       files.find()
       files.on('found', function () {
-        is.array(files.list)
-        is.truthy(files.list.length)
+        is.array(files.files)
+        is.truthy(files.files.length)
         done()
       })
     })

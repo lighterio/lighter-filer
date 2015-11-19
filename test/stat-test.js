@@ -1,17 +1,17 @@
 'use strict'
 /* global describe it */
 
-var Files = require('../lighter-filer')
+var Filer = require('../filer')
 var is = global.is || require('exam/lib/is')
 
-describe('Files.prototype.stat', function () {
+describe('Filer.prototype.stat', function () {
   var dir = __dirname + '/tree'
   it('finds file stats', function (done) {
-    var files = new Files(dir)
+    var files = new Filer(dir)
     files.stat()
     files.on('stats', function () {
-      is.array(files.list)
-      is.truthy(files.list.length)
+      is.array(files.files)
+      is.truthy(files.files.length)
       done()
     })
   })

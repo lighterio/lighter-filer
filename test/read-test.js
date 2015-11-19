@@ -2,15 +2,15 @@
 /* global describe it beforeEach afterEach */
 
 var fs = require('fs')
-var Files = require('../lighter-filer')
+var Filer = require('../filer')
 var is = global.is || require('exam/lib/is')
 var mock = global.mock || require('exam/lib/mock')
 var unmock = mock.unmock
 
-describe('Files.prototype.read', function () {
+describe('Filer.prototype.read', function () {
   var dir = __dirname + '/tree'
   it('reads a single file', function (done) {
-    var files = new Files(dir)
+    var files = new Filer(dir)
     files
       .on('loaded', function (files) {
         is(files.length, 1)
@@ -25,7 +25,7 @@ describe('Files.prototype.read', function () {
       fn(new Error('Error'))
     }
     mock(fs, {readFile: errorFn})
-    var files = new Files(dir)
+    var files = new Filer(dir)
     files
       .on('loaded', function () {
         unmock(fs)

@@ -1,13 +1,13 @@
 'use strict'
 /* global it */
 
-var Files = require('../lighter-filer')
+var Filer = require('../filer')
 var lib = require('path')
 var bench = global.bench || function () {}
 
 bench('Relative paths', function () {
-  var files = new Files('/some/where')
-  it('Files.relative', function () {
+  var files = new Filer('/some/where')
+  it('Filer.relative', function () {
     files.relative('/')
     files.relative('/some/')
     files.relative('/some/where/over')
