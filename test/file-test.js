@@ -27,4 +27,11 @@ describe('File.prototype.extension', function () {
     file.extension = 'css'
     is(file.extension, 'css')
   })
+
+  it('returns empty string when there is no extension', function () {
+    var file = new File({rel: 'LICENSE'})
+    is(file.extension, '')
+    file.extension = 'md'
+    is(file.rel, 'LICENSE.md')
+  })
 })
