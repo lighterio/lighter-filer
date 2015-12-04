@@ -1,4 +1,4 @@
-# lighter-files Roadmap
+# lighter-load Roadmap
 
 ***This is a living document. It describes priorities as they are perceived
 today, and it can evolve over time.***

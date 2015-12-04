@@ -5,18 +5,18 @@
  * symbolic links.
  *
  * Events:
- *   "file" is emitted when a new file is found.
- *   "dir" is emitted when a new directory is found.
- *   "content" is emitted when a file's content has been read.
- *   "found" when a locations are completely found.
- *   "loaded" when locations are completely loaded.
+ * - "file" is emitted when a new file is found.
+ * - "dir" is emitted when a new directory is found.
+ * - "content" is emitted when a file's content has been read.
+ * - "found" when all locations are found (deep search complete).
+ * - "loaded" when all file contents are loaded (deep load complete).
  */
 
 var fs = require('fs')
 var Flagger = require('lighter-flagger')
 module.exports = Flagger.extend({
 
-  init: function Files (root) {
+  init: function Load (root) {
     // Set up Emitter events and Flagger flags.
     Flagger.call(this)
 
@@ -108,19 +108,24 @@ module.exports = Flagger.extend({
     function getStat (path) {
       wait++
       fs.lstat(path, function (error, stat) {
-        if (!error) {
+        if (error) {
+          self.emit('error', error)
+        } else {
           if (stat.isSymbolicLink()) {
             getLink(path)
-          } else if (stat.isDirectory()) {
-            getDir(path)
-            self.dirs.push(path)
-            self.emit('dir', path)
           } else {
-            var file = self.storeStats ? stat : {}
-            file.path = path
-            self.map[path] = file
-            self.list.push(file)
-            self.emit('file', path)
+            var rel = self.relative(path)
+            if (stat.isDirectory()) {
+              getDir(path)
+              self.dirs.push(rel)
+              self.emit('dir', path)
+            } else {
+              var file = self.storeStats ? stat : {}
+              file.rel = rel
+              self.map[rel] = file
+              self.list.push(file)
+              self.emit('file', path)
+            }
           }
         }
         done()
@@ -129,9 +134,12 @@ module.exports = Flagger.extend({
     function getLink (path) {
       wait++
       fs.readlink(path, function (error, link) {
-        if (!error) {
-          if (!self.map[link]) {
-            self.map[link] = path
+        if (error) {
+          self.emit('error', error)
+        } else {
+          var rel = self.relative(link)
+          if (!self.map[rel]) {
+            self.map[rel] = rel
             getDir(path)
           }
         }
@@ -141,7 +149,9 @@ module.exports = Flagger.extend({
     function getDir (path) {
       wait++
       fs.readdir(path, function (error, files) {
-        if (!error) {
+        if (error) {
+          self.emit('error', error)
+        } else {
           path += '/'
           for (var i = 0, l = files.length; i < l; i++) {
             getStat(path + files[i])
@@ -153,7 +163,7 @@ module.exports = Flagger.extend({
     function done () {
       if (!--wait) {
         self.list.sort(function (a, b) {
-          return a.path < b.path ? -1 : 1
+          return a.rel < b.rel ? -1 : 1
         })
         self.emit('found', self.list)
         if (self.storeStats) {
@@ -197,12 +207,15 @@ module.exports = Flagger.extend({
    */
   read: function (path) {
     var self = this
-    self.loadCounter++
+    this.loadCounter++
     fs.readFile(path, function (error, content) {
-      if (!error) {
-        var file = self.map[path]
+      if (error) {
+        self.emit('error', error)
+      } else {
+        var rel = self.relative(path)
+        var file = self.map[rel]
         if (!file) {
-          file = self.map[path] = {path: path}
+          file = self.map[rel] = {rel: rel}
           self.list.push(file)
         }
         file.content = content
@@ -212,5 +225,31 @@ module.exports = Flagger.extend({
       }
     })
     return this
+  },
+
+  /**
+   * Get absolute paths of found files.
+   */
+  paths: function () {
+    var list = this.list
+    var length = list.length
+    var paths = new Array(length)
+    for (var i = 0; i < length; i++) {
+      paths[i] = this.absolute(list[i].rel)
+    }
+    return paths
+  },
+
+  /**
+   * Get relative paths of found files.
+   */
+  rels: function () {
+    var list = this.list
+    var length = list.length
+    var paths = new Array(length)
+    for (var i = 0; i < length; i++) {
+      paths[i] = list[i].rel
+    }
+    return paths
   }
 })

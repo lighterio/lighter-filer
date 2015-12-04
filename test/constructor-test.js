@@ -1,13 +1,13 @@
 'use strict'
 /* global describe it */
 
-var Files = require('../lighter-files')
+var Load = require('../lighter-load')
 var is = global.is || require('exam/lib/is')
 var cwd = process.cwd()
 
-describe('Files', function () {
+describe('Load', function () {
   it('defaults to process.cwd()', function () {
-    var files = new Files()
-    is(files.root, cwd)
+    var load = new Load()
+    is(load.root, cwd)
   })
 })

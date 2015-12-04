@@ -1,4 +1,4 @@
-# Contributing to lighter-files
+# Contributing to lighter-load
 
 We welcome contributions from the community and are happy to have them.
 Please follow this guide when logging issues or making code changes.
@@ -6,7 +6,7 @@ Please follow this guide when logging issues or making code changes.
 ## Logging Issues
 
 All issues should be created using the
-[new issue form](https://github.com/lighterio/lighter-files/issues/new).
+[new issue form](https://github.com/lighterio/lighter-load/issues/new).
 Please describe the issue including steps to reproduce. Also, make sure
 to indicate the version that has the issue.
 
@@ -23,11 +23,11 @@ Code changes are welcome and encouraged! Please follow our process:
    * Run `npm run cover` to test coverage and generate a report.
    * Run `npm run report` to open the coverage report you generated.
 4. [Pull requests](http://help.github.com/send-pull-requests/) should be made
-   to the [master branch](https://github.com/lighterio/lighter-files/tree/master).
+   to the [master branch](https://github.com/lighterio/lighter-load/tree/master).
 
 ## Contributor Code of Conduct
 
-As contributors and maintainers of `lighter-files`, we pledge to respect all
+As contributors and maintainers of `lighter-load`, we pledge to respect all
 people who contribute through reporting issues, posting feature requests,
 updating documentation, submitting pull requests or patches, and other
 activities.
@@ -55,8 +55,8 @@ experience.
 
 We would like to thank all of the amazing people who use, support,
 promote, enhance, document, patch, and submit comments & issues -
-`lighter-files` couldn't exist without you.
+`lighter-load` couldn't exist without you.
 
-Additionally, huge thanks go to [eBay](http://www.ebay.com) for employing
-and supporting [`lighter-files`](http://lighter.io/lighter-files) project
+Additionally, huge thanks go to [eBay](http://rover.ebay.com/rover/1/711-53200-19255-0/1?icep_ff3=9&pub=5575137484&toolid=10001&campid=5337778482&icep_uq=node.js&icep_sortBy=12&ipn=psmain&icep_vectorid=229466&kwid=902099&mtid=824&kw=lg) for employing
+and supporting [`lighter-load`](http://lighter.io/lighter-load) project
 maintainers, and for being an epically awesome place to work (and play).

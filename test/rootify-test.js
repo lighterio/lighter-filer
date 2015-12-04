@@ -1,50 +1,50 @@
 'use strict'
 /* global describe it */
 
-var Files = require('../lighter-files')
+var Load = require('../lighter-load')
 var is = global.is || require('exam/lib/is')
 
-describe('Files', function () {
+describe('Load', function () {
   describe('.absolute', function () {
-    var files = new Files('/some/where')
+    var load = new Load('/some/where')
 
     it('goes up', function () {
-      var path = files.absolute('../')
+      var path = load.absolute('../')
       is(path, '/some/')
     })
 
     it('goes up twice', function () {
-      var path = files.absolute('../../')
+      var path = load.absolute('../../')
       is(path, '/')
     })
 
     it('goes down', function () {
-      var path = files.absolute('over')
+      var path = load.absolute('over')
       is(path, '/some/where/over')
     })
 
     it('goes deep', function () {
-      var path = files.absolute('over/the/rainbow')
+      var path = load.absolute('over/the/rainbow')
       is(path, '/some/where/over/the/rainbow')
     })
 
     it('handles dots', function () {
-      var path = files.absolute('over.js')
+      var path = load.absolute('over.js')
       is(path, '/some/where/over.js')
     })
 
     it('handles a leading dot', function () {
-      var path = files.absolute('./over.js')
+      var path = load.absolute('./over.js')
       is(path, '/some/where/over.js')
     })
 
     it('handles absolute paths', function () {
-      var path = files.absolute('/another/place')
+      var path = load.absolute('/another/place')
       is(path, '/another/place')
     })
 
     it('handles absolute paths under the root', function () {
-      var path = files.absolute('/some/where/new')
+      var path = load.absolute('/some/where/new')
       is(path, '/some/where/new')
     })
   })

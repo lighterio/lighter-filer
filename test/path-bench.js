@@ -1,19 +1,20 @@
 'use strict'
-/* global bench it */
+/* global it */
 
-var Files = require('../lighter-files')
+var Load = require('../lighter-load')
 var lib = require('path')
+var bench = global.bench || function () {}
 
 bench('Relative paths', function () {
-  var files = new Files('/some/where')
-  it('Files.relative', function () {
-    files.relative('/')
-    files.relative('/some/')
-    files.relative('/some/where/over')
-    files.relative('/some/where/over/the/rainbow')
-    files.relative('/some/where/over.js')
-    files.relative('/another/place')
-    files.relative('/some/where/new')
+  var load = new Load('/some/where')
+  it('Load.relative', function () {
+    load.relative('/')
+    load.relative('/some/')
+    load.relative('/some/where/over')
+    load.relative('/some/where/over/the/rainbow')
+    load.relative('/some/where/over.js')
+    load.relative('/another/place')
+    load.relative('/some/where/new')
   })
   it('path.relative', function () {
     lib.relative('/some/where', '/')
