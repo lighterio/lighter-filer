@@ -2,7 +2,7 @@
 /* global describe it */
 
 var Load = require('../lighter-load')
-var is = global.is || require('exam/lib/is')
+var is = global.is || require('exam-is')
 
 describe('Load.prototype.stat', function () {
   var dir = __dirname + '/tree'

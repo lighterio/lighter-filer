@@ -2,7 +2,7 @@
 /* global describe it */
 
 var Filer = require('../filer')
-var is = global.is || require('exam/lib/is')
+var is = global.is || require('exam-is')
 var cwd = process.cwd()
 
 describe('Filer.prototype.display', function () {

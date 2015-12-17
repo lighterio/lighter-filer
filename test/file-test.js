@@ -2,7 +2,7 @@
 /* global describe it */
 
 var File = require('../file')
-var is = global.is || require('exam/lib/is')
+var is = global.is || require('exam-is')
 
 describe('File', function () {
   it('works with zero data', function () {

@@ -3,8 +3,8 @@
 
 var fs = require('fs')
 var Load = require('../lighter-load')
-var is = global.is || require('exam/lib/is')
-var mock = global.mock || require('exam/lib/mock')
+var is = global.is || require('exam-is')
+var mock = global.mock || require('exam-mock')
 var unmock = mock.unmock
 
 describe('Load.prototype.read', function () {
