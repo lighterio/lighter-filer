@@ -1,35 +1,52 @@
 'use strict'
-/* global describe it */
+/* global describe it is mock unmock */
 
-var Filer = require('../filer')
-var is = global.is || require('exam-is')
-var cwd = process.cwd()
+var Load = require('../lighter-load')
 
-describe('Filer.prototype.display', function () {
-  var filer = new Filer()
-
+describe('Load.prototype.display', function () {
   it('works in a sub directory', function () {
-    var display = filer.display(__filename)
+    var load = new Load()
+    var display = load.display(__filename)
     is(display, './test/display-test.js')
   })
 
   it('works for unrelated paths', function () {
-    var display = filer.display('/tmp/blah.js')
+    var load = new Load()
+    var display = load.display('/tmp/blah.js')
     is(display, '/tmp/blah.js')
   })
 
   it('works after chdir', function () {
-    process.chdir(__dirname)
-    var display = filer.display(__filename)
+    var load = new Load(__dirname)
+    var display = load.display(__filename)
     is(display, './display-test.js')
-    process.chdir(cwd)
   })
 
   it('works for a parent directory', function () {
-    process.chdir(__dirname)
+    var load = new Load(__dirname)
     var readme = __dirname.replace(/test$/, 'README.md')
-    var display = filer.display(readme)
+    var display = load.display(readme)
     is(display, '../README.md')
-    process.chdir(cwd)
+  })
+
+  it('works for the home directory', function () {
+    mock(process.env, {
+      HOME: '/Users/me'
+    })
+    var load = new Load()
+    var display = load.display('/Users/me/profile')
+    is(display, '~/profile')
+    unmock(process.env)
+  })
+
+  it('works for the home directory on Windows', function () {
+    mock(process.env, {
+      HOME: '',
+      USERPROFILE: 'C:\\Users\\me'
+    })
+    var load = new Load()
+    var display = load.display('C:\\Users\\me\\profile')
+    is(display, '~/profile')
+    unmock(process.env)
   })
 })

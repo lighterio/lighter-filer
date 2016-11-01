@@ -1,8 +1,7 @@
 'use strict'
-/* global describe it */
+/* global describe it is */
 
 var Load = require('../lighter-load')
-var is = global.is || require('exam-is')
 
 describe('Load', function () {
   describe('.absolute', function () {

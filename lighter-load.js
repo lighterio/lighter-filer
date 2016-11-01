@@ -14,6 +14,7 @@
 
 var fs = require('fs')
 var Flagger = require('lighter-flagger')
+var File = require('./file')
 module.exports = Flagger.extend({
 
   init: function Load (root) {
@@ -50,6 +51,7 @@ module.exports = Flagger.extend({
    */
   absolute: function (path) {
     var dir = this.root
+    path = slashify(path)
     if (path[0] !== '/') {
       while (path.substr(0, 3) === '../') {
         path = path.substr(3)
@@ -64,7 +66,7 @@ module.exports = Flagger.extend({
   },
 
   /**
-   * Convert a absolute path to a relative path.
+   * Convert an absolute path to a relative path.
    *
    * @param  {String} path  A absolute path.
    * @return {String}       The relative path.
@@ -72,6 +74,7 @@ module.exports = Flagger.extend({
   relative: function (path) {
     var dir = this.root
     var length = dir.length
+    path = slashify(path)
     if (path.substr(0, length) === dir) {
       path = path.substr(length + 1)
     } else {
@@ -93,6 +96,26 @@ module.exports = Flagger.extend({
       path = up + pathParts.slice(same, pathParts.length).join('/')
     }
     return path
+  },
+
+  /**
+   * Return a user-friendly path, using "~/" or "./" where possible.
+   *
+   * @param  {String} path  A relative path.
+   * @return {String}       The shortened path.
+   */
+  display: function display (path) {
+    var rel = this.relative(path)
+    var env = process.env
+    var home = slashify(env.HOME || env.USERPROFILE)
+    if (rel[0] !== '.') {
+      rel = './' + rel
+    }
+    path = slashify(path)
+    if (path.indexOf(home) === 0) {
+      path = '~/' + path.substr(home.length + 1)
+    }
+    return rel.length < path.length ? rel : path
   },
 
   /**
@@ -185,18 +208,18 @@ module.exports = Flagger.extend({
   },
 
   /**
-   * Load files from a specified path, or from the root.
+   * Add files from a specified path, or from the root.
    *
    * @param  {String} path  An optional path.
    */
-  load: function (path) {
+  add: function (path) {
     // Bind the content reader to the file event, but only bind it once.
     if (!this.readContents) {
       this.readContents = true
       this.on('file', this.read)
     }
 
-    // Load by finding files.
+    // Find files recursively.
     return this.find(path)
   },
 
@@ -215,7 +238,7 @@ module.exports = Flagger.extend({
         var rel = self.relative(path)
         var file = self.map[rel]
         if (!file) {
-          file = self.map[rel] = {rel: rel}
+          file = self.map[rel] = new File({rel: rel, load: self})
           self.list.push(file)
         }
         file.content = content
@@ -253,3 +276,7 @@ module.exports = Flagger.extend({
     return paths
   }
 })
+
+function slashify (path) {
+  return path.replace(/\\/g, '/')
+}

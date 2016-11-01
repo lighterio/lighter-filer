@@ -1,8 +1,7 @@
 'use strict'
-/* global describe it */
+/* global describe it is */
 
 var Load = require('../lighter-load')
-var is = global.is || require('exam-is')
 var cwd = process.cwd()
 
 describe('Load', function () {

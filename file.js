@@ -13,14 +13,14 @@ var File = module.exports = Flagger.extend({
     this._events = {}
     this._flags = {}
     this._waitCount = 0
-    this._waitParents = options.filer ? [options.filer] : []
+    this._waitParents = options.load ? [options.load] : []
 
-    var filer = this.filer = options.filer
+    var load = this.load = options.load
     this.rel = options.rel || ''
     this.mode = options.mode || 33188
     this.mtime = options.mtime
-    if (filer) {
-      filer.waitFor(this)
+    if (load) {
+      load.waitFor(this)
     }
   }
 })

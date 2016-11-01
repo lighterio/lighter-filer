@@ -1,11 +1,8 @@
 'use strict'
-/* global describe it beforeEach afterEach */
+/* global describe it is mock unmock */
 
 var fs = require('fs')
 var Load = require('../lighter-load')
-var is = global.is || require('exam-is')
-var mock = global.mock || require('exam-mock')
-var unmock = mock.unmock
 
 describe('Load.prototype.read', function () {
   var dir = __dirname + '/tree'

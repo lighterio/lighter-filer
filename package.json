@@ -3,14 +3,11 @@
   "version": "0.0.1",
   "description": "A lightweight directory and file utility.",
   "dependencies": {
-    "lighter-flagger": "0.0.1"
+    "lighter-flagger": "^1.1.0"
   },
   "devDependencies": {
-    "exam": ">=1.3.0 <2"
+    "exam": "^1.4.5"
   },
-  "bundledDependencies": [
-    "lighter-flagger"
-  ],
   "keywords": [
     "filer",
     "fs",
@@ -59,7 +56,7 @@
   ],
   "main": "lighter-load.js",
   "engines": {
-    "node": ">=0.8.28"
+    "node": ">=0.10.27"
   },
   "scripts": {
     "test": "./node_modules/exam/exam.js",
