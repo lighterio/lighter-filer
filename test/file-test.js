@@ -1,7 +1,7 @@
 'use strict'
 /* global describe it is */
 
-var File = require('../file')
+var File = require('../lighter-load').File
 
 describe('File', function () {
   it('works with zero data', function () {

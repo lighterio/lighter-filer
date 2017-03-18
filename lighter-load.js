@@ -14,35 +14,31 @@
 
 var fs = require('fs')
 var Flagger = require('lighter-flagger')
-var File = require('./file')
-module.exports = Flagger.extend({
+var Load = module.exports = Flagger.extend(function Load (root, waitParent) {
+  // Set up Emitter events and Flagger flags.
+  Flagger.call(this, waitParent)
 
-  init: function Load (root) {
-    // Set up Emitter events and Flagger flags.
-    Flagger.call(this)
+  // Default to the current working directory.
+  this.root = root || process.cwd()
 
-    // Default to the current working directory.
-    this.root = root || process.cwd()
+  // Mapping of paths to objects or symlink destinations.
+  this.map = {}
 
-    // Mapping of paths to objects or symlink destinations.
-    this.map = {}
+  // Array of files.
+  this.list = []
 
-    // Array of files.
-    this.list = []
+  // Array of directories.
+  this.dirs = []
 
-    // Array of directories.
-    this.dirs = []
+  // Whether to store file stats.
+  this.storeStats = false
 
-    // Whether to store file stats.
-    this.storeStats = false
+  // Whether to read file contents.
+  this.readContents = false
 
-    // Whether to read file contents.
-    this.readContents = false
-
-    // Number of files whose contents we're waiting for.
-    this.loadCounter = 0
-  },
-
+  // Number of files whose contents we're waiting for.
+  this.loadCounter = 0
+}, {
   /**
    * Convert a relative path to an absolute path.
    *
@@ -126,8 +122,11 @@ module.exports = Flagger.extend({
   find: function (path) {
     var self = this
     var wait = 0
-    path = self.absolute(path || self.root)
+
+    this.wait()
+    path = this.absolute(path || this.root)
     getStat(path)
+
     function getStat (path) {
       wait++
       fs.lstat(path, function (error, stat) {
@@ -154,6 +153,7 @@ module.exports = Flagger.extend({
         done()
       })
     }
+
     function getLink (path) {
       wait++
       fs.readlink(path, function (error, link) {
@@ -169,6 +169,7 @@ module.exports = Flagger.extend({
         done()
       })
     }
+
     function getDir (path) {
       wait++
       fs.readdir(path, function (error, files) {
@@ -183,17 +184,20 @@ module.exports = Flagger.extend({
         done()
       })
     }
+
     function done () {
       if (!--wait) {
         self.list.sort(function (a, b) {
           return a.rel < b.rel ? -1 : 1
         })
-        self.emit('found', self.list)
+        self.emit('found', path)
         if (self.storeStats) {
-          self.emit('stats', self.list)
+          self.emit('stats', path)
         }
+        self.unwait()
       }
     }
+
     return this
   },
 
@@ -230,6 +234,7 @@ module.exports = Flagger.extend({
    */
   read: function (path) {
     var self = this
+    this.wait()
     this.loadCounter++
     fs.readFile(path, function (error, content) {
       if (error) {
@@ -246,6 +251,7 @@ module.exports = Flagger.extend({
       if (!--self.loadCounter) {
         self.emit('loaded', self.list)
       }
+      self.unwait()
     })
     return this
   },
@@ -274,6 +280,48 @@ module.exports = Flagger.extend({
       paths[i] = list[i].rel
     }
     return paths
+  }
+})
+
+/**
+ * A File.
+ */
+var File = Load.File = Flagger.extend(function File (options) {
+  options = options || 0
+  var load = this.load = options.load
+
+  this._events = {}
+  this._flags = {}
+  this._waitCount = 0
+  this._waitParents = load ? [load] : []
+
+  this.rel = options.rel || ''
+  this.mode = options.mode || 33188
+  this.mtime = options.mtime
+})
+
+Object.defineProperty(File.prototype, 'filename', {
+  get: function getFilename () {
+    return this.rel.replace(/^.*\//, '')
+  },
+  set: function setFilename (filename) {
+    this.rel = this.rel.replace(/(\/)?[^\/]+$/, function (match, slash) {
+      return slash + filename
+    })
+    return filename
+  }
+})
+
+Object.defineProperty(File.prototype, 'extension', {
+  get: function getExtension () {
+    var filename = this.filename
+    var parts = filename.split('.')
+    var count = parts.length
+    return count > 1 ? parts[count - 1] : ''
+  },
+  set: function setExtension (extension) {
+    this.rel = this.rel.replace(/(\.[^\/\.]+)?$/, '.' + extension)
+    return extension
   }
 })
 

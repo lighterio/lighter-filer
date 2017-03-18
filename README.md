@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/npm/v/lighter-load.svg)](//www.npmjs.com/package/lighter-load)
 [![Downloads](https://img.shields.io/npm/dm/lighter-load.svg)](//www.npmjs.com/package/lighter-load)
 [![Build](https://img.shields.io/travis/lighterio/lighter-load.svg)](//travis-ci.org/lighterio/lighter-load)
-[![Coverage](https://img.shields.io/coveralls/lighterio/lighter-load/master.svg)](//coveralls.io/r/lighterio/lighter-load)
+[![Coverage](https://img.shields.io/codecov/c/github/lighterio/lighter-load/master.svg)](//codecov.io/gh/lighterio/lighter-load)
 [![Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](//www.npmjs.com/package/standard)
 
 The `lighter-load` module is a lightweight directory deep-fs utility.
